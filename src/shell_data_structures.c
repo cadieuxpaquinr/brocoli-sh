@@ -35,6 +35,7 @@ char *queue_pop(queue *q)
          q->last = NULL;
       char *token = NULL;
       token = strdup(q->first->token);
+      free(q->first->token);
       struct queue_node *node = q->first;
       q->first = node->next;
       free(node);

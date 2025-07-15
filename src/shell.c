@@ -50,6 +50,7 @@ int BRO_execute(queue *args)
       char *temp_str = queue_pop(args);
       strcat(command, temp_str);
       strcat(command, " ");
+      free(temp_str);
    }
    fprintf(stderr, "Command: %s\n", command);
    int err = system(command);
