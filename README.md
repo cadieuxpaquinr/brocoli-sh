@@ -15,9 +15,12 @@ build/bin/bro
 - [X] Cmake Integration
 - [X] Shell loop
 - [X] Runs Linux programs
-- [ ] Standalone
+- [ ] Move in the text
+- [ ] Piping
+- [ ] Shell history
 - [ ] Cancel commands without killing shell
 - [ ] Autocomplete paths
 - [ ] Autocomplete commands
+- [ ] Standalone
 - [ ] Support scripting
 - [ ] Update Roadmap
