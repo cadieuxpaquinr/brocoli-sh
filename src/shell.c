@@ -1,5 +1,7 @@
+#include "shell_data_structures.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #define SH_BUFZISE 1024
@@ -13,32 +15,53 @@ int BRO_read_line(char *line)
    // all good
    return 0;
 }
-char **BRO_split_line(char *line)
+int BRO_split_line(char *line, queue *q)
 {
-   fprintf(stderr, "BRO_split_line()\n");
+   char *delims = " ";
+   char *str;
+   char *ret = NULL;
+   int offset = 0;
+   while (1)
+   {
+      str = line;
+      if (ret)
+         offset += strlen(ret) + 1;
+      str = str + offset;
+      ret = strtok(str, delims);
+      fprintf(stdout, "%s", str);
+      if (strstr(str, "\n"))
+      {
+         ret = strtok(str, "\n");
+         queue_push(q, str); // saves token
+         break;
+      }
+      queue_push(q, str); // saves token
+   }
    return 0;
 }
 int BRO_execute(char **args)
 {
-   fprintf(stderr, "BRO_execute()\n");
+   fprintf(stdout, "BRO_execute()\n");
+   // system(args);
    return 0;
 }
 
 int BRO_loop()
 {
-   char **args;
    int status;
    char line[SH_BUFZISE];
    int err;
+   queue args;
+   queue_initialize(&args);
    do
    {
-      fprintf(stderr, "Bro > ");
+      fprintf(stdout, "Bro > ");
       err = BRO_read_line(line);
-      fprintf(stdout, "%s\n", line);
-      //   args = BRO_split_line(line);
+      fprintf(stdout, "line: %s\n", line);
+      usleep(1000000);
+      err = BRO_split_line(line, &args);
       //   status = BRO_execute(args);
-      free(args);
-      usleep(100000);
+      queue_print(&args);
    } while (status);
    return 0;
 }
