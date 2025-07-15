@@ -39,11 +39,22 @@ int BRO_split_line(char *line, queue *q)
    }
    return 0;
 }
-int BRO_execute(char **args)
+int BRO_execute(queue *args)
 {
-   fprintf(stdout, "BRO_execute()\n");
-   // system(args);
-   return 0;
+   fprintf(stderr, "BRO_execute\n");
+   char *command = malloc(1024*sizeof(char));
+   while (!queue_is_empty(args))
+   {
+      fprintf(stderr, "!queue_is_empty(args)\n");
+
+      char *temp_str = queue_pop(args);
+      strcat(command, temp_str);
+      strcat(command, " ");
+   }
+   fprintf(stderr, "Command: %s\n", command);
+   int err = system(command);
+   free(command);
+   return err;
 }
 
 int BRO_loop()
@@ -60,15 +71,14 @@ int BRO_loop()
       fprintf(stdout, "line: %s\n", line);
       usleep(1000000);
       err = BRO_split_line(line, &args);
-      //   status = BRO_execute(args);
-      queue_print(&args);
+      status = BRO_execute(&args);
    } while (status);
    return 0;
 }
 
 int main(int argc, char **argv)
 {
-   for (;;)
+   // for (;;)
       BRO_loop();
    fprintf(stdout, "\nBRO > Bye!\n");
    return 0;

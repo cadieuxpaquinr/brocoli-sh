@@ -13,7 +13,7 @@ build/bin/bro
 # Roadmap
 
 - [X] Cmake Integration
-- [ ] Shell loop
-- [ ] Runs Linux programs
+- [X] Shell loop
+- [X] Runs Linux programs
 - [ ] Standalone
 - [ ] Update Roadmap
