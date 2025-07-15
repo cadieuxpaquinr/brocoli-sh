@@ -86,16 +86,27 @@ int BRO_num_builtins() { return sizeof(builtin_str) / sizeof(char *); }
 
 int BRO_cd(char **args)
 {
+   char *p;
    if (args[1] == NULL)
    {
-      fprintf(stderr, "BRO: expected argument to \"cd\"\n");
-   }
-   else
-   {
+      args[1] = getenv("HOME");
       if (chdir(args[1]) != 0)
       {
          perror("BRO");
       }
+   }
+   else if ((p = strstr(args[1], "~")))
+   {
+      // int pos = p - args[1];
+      char *temp = args[1]+strlen("~")+1;
+      char *home = getenv("HOME");
+      strcat(home, "/");
+      strcat(home, temp);
+      args[1] = home;
+   }
+   if (chdir(args[1]) != 0)
+   {
+      perror("BRO");
    }
    return 1;
 }
