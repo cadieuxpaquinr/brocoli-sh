@@ -17,5 +17,7 @@ build/bin/bro
 - [X] Runs Linux programs
 - [ ] Standalone
 - [ ] Cancel commands without killing shell
+- [ ] Autocomplete paths
+- [ ] Autocomplete commands
 - [ ] Support scripting
 - [ ] Update Roadmap
