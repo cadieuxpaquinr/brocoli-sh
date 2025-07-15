@@ -2,80 +2,95 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
-#define SH_BUFZISE 1024
+#define SH_BUFSIZE 512
+#define SH_MAX_TOKENS 64
 
 int BRO_read_line(char *line)
 {
 
-   if (!fgets(line, SH_BUFZISE, stdin))
+   if (!fgets(line, SH_BUFSIZE, stdin))
       // error
       return 1;
    // all good
    return 0;
 }
-int BRO_split_line(char *line, queue *q)
+char **BRO_split_line(char *line)
 {
    char *delims = " ";
-   char *str;
+   char *str = line;
    char *ret = NULL;
    int offset = 0;
-   while (1)
+   char **args = malloc(SH_MAX_TOKENS * sizeof(char *));
+   for (int i = 0; i < SH_MAX_TOKENS; i++)
    {
       str = line;
       if (ret)
          offset += strlen(ret) + 1;
-      str = str + offset;
+      str += offset;
       ret = strtok(str, delims);
-      if (strstr(str, "\n"))
+      args[i] = str;
+      if (strstr(args[i], "\n"))
       {
-         ret = strtok(str, "\n");
-         queue_push(q, str); // saves token
+         args[i][strlen(args[i]) - 1] = '\0';
          break;
       }
-      queue_push(q, str); // saves token
    }
-   return 0;
+
+   return args;
 }
-int BRO_execute(queue *args)
+
+int BRO_execute(char **args)
 {
-   char *command = malloc(1024*sizeof(char));
-   strcpy(command,""); //init mallocd value to suppress warning
-   while (!queue_is_empty(args))
+   pid_t pid, wpid;
+   int status;
+
+   pid = fork();
+   if (pid == 0)
    {
-      char *temp_str = queue_pop(args);
-      strcat(command, temp_str);
-      strcat(command, " ");
-      free(temp_str);
+      // Child process
+      if (execvp(args[0], args) == -1)
+      {
+         perror("BRO");
+      }
+      exit(EXIT_FAILURE);
    }
-   // fprintf(stderr, "Command: %s\n", command); //! keep for debug output
-   int err = system(command);
-   free(command);
-   return err;
+   else if (pid < 0)
+   {
+      // Error forking
+      perror("BRO");
+   }
+   else
+   {
+      // Parent process
+      do
+      {
+         wpid = waitpid(pid, &status, WUNTRACED);
+      } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+   }
+
+   return 1;
 }
 
 int BRO_loop()
 {
    int status;
-   char line[SH_BUFZISE];
+   char line[SH_BUFSIZE];
    int err;
-   queue args;
-   queue_initialize(&args);
-   do
-   {
-      fprintf(stdout, "Bro > ");
-      err = BRO_read_line(line);
-      err = BRO_split_line(line, &args);
-      status = BRO_execute(&args);
-   } while (status);
+   char **args;
+   fprintf(stdout, "Bro > ");
+   err = BRO_read_line(line);
+   args = BRO_split_line(line);
+   status = BRO_execute(args);
    return 0;
 }
 
 int main(int argc, char **argv)
 {
    // for (;;)
-      BRO_loop();
+   BRO_loop();
    fprintf(stdout, "\nBRO > Bye!\n");
    return 0;
 }
