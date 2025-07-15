@@ -16,4 +16,6 @@ build/bin/bro
 - [X] Shell loop
 - [X] Runs Linux programs
 - [ ] Standalone
+- [ ] Cancel commands without killing shell
+- [ ] Support scripting
 - [ ] Update Roadmap
