@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -73,6 +74,75 @@ int BRO_execute(char **args)
    return 1;
 }
 
+int BRO_cd(char **args);
+int BRO_help(char **args);
+int BRO_exit(char **args);
+
+char *builtin_str[] = {"cd", "help", "exit"};
+
+int (*builtin_func[])(char **) = {&BRO_cd, &BRO_help, &BRO_exit};
+
+int BRO_num_builtins() { return sizeof(builtin_str) / sizeof(char *); }
+
+int BRO_cd(char **args)
+{
+   if (args[1] == NULL)
+   {
+      fprintf(stderr, "BRO: expected argument to \"cd\"\n");
+   }
+   else
+   {
+      if (chdir(args[1]) != 0)
+      {
+         perror("BRO");
+      }
+   }
+   return 1;
+}
+
+int BRO_exit(char **args)
+{
+   fprintf(stdout, "\nBro > Bye!\n");
+   exit(0);
+}
+
+int BRO_help(char **args)
+{
+   fprintf(stderr, "\e[1;1H\e[2J");
+   struct winsize w;
+   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+   for (int i = 0; i < w.ws_row; i++)
+      fprintf(stderr, "\n");
+   fprintf(stderr, "HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEELP!");
+   for (int i = 0; i < w.ws_row; i++)
+   {
+      usleep(25000);
+      fprintf(stderr, "\n");
+   }
+
+   return 0;
+}
+
+int BRO_prexec(char **args)
+{
+   int i;
+
+   if (args[0] == NULL)
+   {
+      return 1;
+   }
+
+   for (i = 0; i < BRO_num_builtins(); i++)
+   {
+      if (strcmp(args[0], builtin_str[i]) == 0)
+      {
+         return (*builtin_func[i])(args);
+      }
+   }
+
+   return BRO_execute(args);
+}
+
 int BRO_loop()
 {
    int status;
@@ -82,14 +152,15 @@ int BRO_loop()
    fprintf(stdout, "Bro > ");
    err = BRO_read_line(line);
    args = BRO_split_line(line);
-   status = BRO_execute(args);
+   BRO_prexec(args);
+   // status = BRO_execute(args);
    return 0;
 }
 
 int main(int argc, char **argv)
 {
-   // for (;;)
-   BRO_loop();
+   for (;;)
+      BRO_loop();
    fprintf(stdout, "\nBRO > Bye!\n");
    return 0;
 }
