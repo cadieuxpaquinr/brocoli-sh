@@ -28,7 +28,6 @@ int BRO_split_line(char *line, queue *q)
          offset += strlen(ret) + 1;
       str = str + offset;
       ret = strtok(str, delims);
-      fprintf(stdout, "%s", str);
       if (strstr(str, "\n"))
       {
          ret = strtok(str, "\n");
@@ -41,18 +40,16 @@ int BRO_split_line(char *line, queue *q)
 }
 int BRO_execute(queue *args)
 {
-   fprintf(stderr, "BRO_execute\n");
    char *command = malloc(1024*sizeof(char));
+   strcpy(command,""); //init mallocd value to suppress warning
    while (!queue_is_empty(args))
    {
-      fprintf(stderr, "!queue_is_empty(args)\n");
-
       char *temp_str = queue_pop(args);
       strcat(command, temp_str);
       strcat(command, " ");
       free(temp_str);
    }
-   fprintf(stderr, "Command: %s\n", command);
+   // fprintf(stderr, "Command: %s\n", command); //! keep for debug output
    int err = system(command);
    free(command);
    return err;
@@ -69,8 +66,6 @@ int BRO_loop()
    {
       fprintf(stdout, "Bro > ");
       err = BRO_read_line(line);
-      fprintf(stdout, "line: %s\n", line);
-      usleep(1000000);
       err = BRO_split_line(line, &args);
       status = BRO_execute(&args);
    } while (status);
