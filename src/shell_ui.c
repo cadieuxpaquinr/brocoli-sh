@@ -4,19 +4,54 @@
 
 WINDOW *winshell;
 
+enum TYPE
+{
+   integer,
+   string,
+   character
+};
+/* usage
+int *whatever;
+*whatever = (x - base_x);
+helper_debug((void *)whatever, integer);
+*/
+int helper_debug(void *data, enum TYPE type)
+{
+   int y, x;
+   getyx(winshell, y, x);
+   if (type == string)
+   {
+      char *debug_str = (char *)data;
+      mvprintw(y + 1, 0, "        ");
+      mvprintw(y + 1, 0, "%s", debug_str);
+   }
+   else if (type == integer)
+   {
+      int *debug_str = (int *)data;
+      mvprintw(y + 1, 0, "        ");
+      mvprintw(y + 1, 0, "%d", *debug_str);
+   }
+   else if (type == character)
+   {
+      char *debug_str = (char *)data;
+      mvprintw(y + 1, 0, "        ");
+      mvprintw(y + 1, 0, "%c", debug_str[0]);
+   }
+
+   return 0;
+}
+
 int str_insert(char *str, int x, int base_x, int ch)
 {
    char *debug_str;
    int max_x = getmaxx(winshell);
-   for (int i = max_x; i > (x-base_x); i--)
+   for (int i = max_x; i > (x - base_x); i--)
    {
-      if (str[i]=='\0')
+      if (str[i] == '\0')
          continue;
-      str[i+1] = str[i];
+      str[i + 1] = str[i];
    }
    str[x - base_x] = ch;
-   mvprintw(1, 0, "        ");
-   mvprintw(1, 0, "%d", (x - base_x));
    return 0;
 }
 
