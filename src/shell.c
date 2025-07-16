@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -98,7 +98,7 @@ int BRO_cd(char **args)
    else if ((p = strstr(args[1], "~")))
    {
       // int pos = p - args[1];
-      char *temp = args[1]+strlen("~")+1;
+      char *temp = args[1] + strlen("~") + 1;
       char *home = getenv("HOME");
       strcat(home, "/");
       strcat(home, temp);
@@ -170,6 +170,13 @@ int BRO_loop()
 
 int main(int argc, char **argv)
 {
+   initscr();             // Initialise la structure WINDOW et autres paramètres
+   printw("Hello World"); // Écrit Hello World à l'endroit où le curseur logique
+                          // est positionné
+   refresh(); // Rafraîchit la fenêtre courante afin de voir le message
+              // apparaître
+   getch();   // On attend que l'utilisateur appui sur une touche pour quitter
+   endwin();  // Restaure les paramètres par défaut du terminal
    for (;;)
       BRO_loop();
    fprintf(stdout, "\nBRO > Bye!\n");
