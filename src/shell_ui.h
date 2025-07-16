@@ -1,6 +1,5 @@
 #include <ncurses.h>
 
-
-int test_curse();
+char *the_curse();
 
 int uncurse();

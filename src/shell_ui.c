@@ -47,24 +47,29 @@ int str_insert(char *str, int x, int base_x, int ch)
    int max_x = getmaxx(winshell);
    for (int i = max_x; i > (x - base_x); i--)
    {
-      if (str[i] == '\0')
-         continue;
+      if (i != 0)
+         if (str[i] == '\0')
+            continue;
       str[i + 1] = str[i];
    }
    str[x - base_x] = ch;
    return 0;
 }
 
-int test_curse()
+char *the_curse()
 {
    int ch, x, y, base_y, base_x, max_x;
-   winshell = initscr(); /* Start curses mode 		*/
-   raw();                /* Line buffering disabled	*/
-   cbreak();
+   if (!winshell)
+   {
+      winshell = initscr(); /* Start curses mode 		*/
+      raw();                /* Line buffering disabled	*/
+      cbreak();
+      keypad(stdscr, TRUE); /* We get F1, F2 etc..		*/
+      noecho();             /* Don't echo() while we do getch */
+   }
 
-   keypad(stdscr, TRUE); /* We get F1, F2 etc..		*/
-   noecho();             /* Don't echo() while we do getch */
-   printw("Bro > ");
+   getyx(winshell, y, x);
+   mvprintw(y, 0, "Bro > ");
    getyx(winshell, base_y, base_x);
    max_x = getmaxx(winshell);
    char *str = malloc(max_x * sizeof(char));
@@ -77,7 +82,13 @@ int test_curse()
                      * we have to press enter before it
                      * gets to the program 		*/
       if (KEY_ENTER == ch || '\n' == ch || '\r' == ch)
-         return 0;
+      {
+         str_insert(str, x, base_x, '\n');
+         // mvprintw(y+1, 0, "\n");
+         mvaddch(y, x, '\n');
+         refresh();
+         return str;
+      }
       else if (KEY_LEFT == ch)
          move(y, x - 1);
       else if (KEY_RIGHT == ch)

@@ -4,6 +4,7 @@
 #include <sys/ioctl.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "shell_ui.h"
 
@@ -159,11 +160,12 @@ int BRO_prexec(char **args)
 int BRO_loop()
 {
    int status;
-   char line[SH_BUFSIZE];
+   // char line[SH_BUFSIZE];
+   char *line;
    int err;
    char **args;
-   fprintf(stdout, "Bro > ");
-   err = BRO_read_line(line);
+   line = the_curse();
+   // err = BRO_read_line(line);
    args = BRO_split_line(line);
    BRO_prexec(args);
    // status = BRO_execute(args);
@@ -172,7 +174,7 @@ int BRO_loop()
 
 int main(int argc, char **argv)
 {
-   test_curse();
+
    for (;;)
       BRO_loop();
    uncurse();
