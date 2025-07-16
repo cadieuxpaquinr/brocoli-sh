@@ -4,16 +4,21 @@
 
 WINDOW *winshell;
 
-// int str_insert(char *str, int x, int base_x, int ch)
-// {
-//    for (int i = 0; getmaxx(winshell) > i; i--)
-//    {
-//       if (str[i]=='\0')
-//          continue;
-//       str[i+1] = str[i];
-//    }
-//    return 0;
-// }
+int str_insert(char *str, int x, int base_x, int ch)
+{
+   char *debug_str;
+   int max_x = getmaxx(winshell);
+   for (int i = max_x; i > (x-base_x); i--)
+   {
+      if (str[i]=='\0')
+         continue;
+      str[i+1] = str[i];
+   }
+   str[x - base_x] = ch;
+   mvprintw(1, 0, "        ");
+   mvprintw(1, 0, "%d", (x - base_x));
+   return 0;
+}
 
 int test_curse()
 {
@@ -48,8 +53,7 @@ int test_curse()
          return 0;
       else
       {
-         // str_insert(str, x, base_x, ch);
-         str[x - base_x] = ch;
+         str_insert(str, x, base_x, ch);
          mvaddstr(base_y, base_x, str);
          move(y, x + 1);
       }
