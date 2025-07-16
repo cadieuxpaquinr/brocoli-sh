@@ -1,9 +1,11 @@
-#include <ncurses.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+#include "shell_ui.h"
 
 #define SH_BUFSIZE 512
 #define SH_MAX_TOKENS 64
@@ -170,15 +172,10 @@ int BRO_loop()
 
 int main(int argc, char **argv)
 {
-   initscr();             // Initialise la structure WINDOW et autres paramètres
-   printw("Hello World"); // Écrit Hello World à l'endroit où le curseur logique
-                          // est positionné
-   refresh(); // Rafraîchit la fenêtre courante afin de voir le message
-              // apparaître
-   getch();   // On attend que l'utilisateur appui sur une touche pour quitter
-   endwin();  // Restaure les paramètres par défaut du terminal
+   test_curse();
    for (;;)
       BRO_loop();
+   uncurse();
    fprintf(stdout, "\nBRO > Bye!\n");
    return 0;
 }
