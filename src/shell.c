@@ -44,14 +44,23 @@ char **BRO_split_line(char *line)
    return args;
 }
 
+#define READ_END 0
+#define WRITE_END 1
+
 int BRO_execute(char **args)
 {
    pid_t pid, wpid;
    int status;
-
+   int fd[2];
+   pipe(fd);
    pid = fork();
    if (pid == 0)
    {
+
+      close(STDOUT_FILENO);
+      dup2(fd[WRITE_END], STDOUT_FILENO);
+      // close(fd[READ_END]);
+      // close(fd[WRITE_END]);
       // Child process
       if (execvp(args[0], args) == -1)
       {
@@ -69,10 +78,14 @@ int BRO_execute(char **args)
       // Parent process
       do
       {
+         // close(fd[READ_END]);
+         // close(fd[WRITE_END]);
          wpid = waitpid(pid, &status, WUNTRACED);
       } while (!WIFEXITED(status) && !WIFSIGNALED(status));
    }
-
+   char *buf;
+   read(fd[READ_END], buf, 4096);
+   fprintf(stderr, "%s\n", buf);
    return 1;
 }
 
@@ -152,18 +165,18 @@ int BRO_prexec(char **args)
          return (*builtin_func[i])(args);
       }
    }
-
    return BRO_execute(args);
 }
 
 int BRO_loop()
 {
    int status;
-   char line[SH_BUFSIZE];
+   // char line[SH_BUFSIZE];
+   char *line;
    int err;
    char **args;
-   fprintf(stdout, "Bro > ");
-   err = BRO_read_line(line);
+   line = the_curse();
+   // err = BRO_read_line(line);
    args = BRO_split_line(line);
    BRO_prexec(args);
    // status = BRO_execute(args);
@@ -172,7 +185,7 @@ int BRO_loop()
 
 int main(int argc, char **argv)
 {
-   test_curse();
+
    for (;;)
       BRO_loop();
    uncurse();
