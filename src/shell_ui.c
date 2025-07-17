@@ -87,7 +87,7 @@ char *the_curse()
    {
       initscr(); /* Start curses mode 		*/
       scrollok(stdscr, TRUE);
-      raw();                /* Line buffering disabled	*/
+      raw(); /* Line buffering disabled	*/
       cbreak();
       keypad(stdscr, TRUE); /* We get F1, F2 etc..		*/
       noecho();             /* Don't echo() while we do getch */
@@ -124,10 +124,13 @@ char *the_curse()
       case KEY_RIGHT:
          move(y, x + 1);
          break;
+      //! Do not know yet how to differentiate mouse from up/down arrows
       case KEY_DOWN:
-         return 0;
+         scroll(stdscr);
+         break;
       case KEY_UP:
-         return 0;
+         scrl(-1);
+         break;
       case KEY_BACKSPACE: // TODO: write better code
          str_remove(str, x, base_x);
          move(base_y, base_x);
