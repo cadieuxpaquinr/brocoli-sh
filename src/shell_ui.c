@@ -71,7 +71,7 @@ int str_remove(char *str, int x, int base_x)
 int str_delete(char *str, int x, int base_x)
 {
    int max_x = getmaxx(stdscr);
-   for (int i = (x - base_x + 1); i < max_x; i++)
+   for (int i = (x - base_x); i < max_x; i++)
    {
       str[i] = str[i + 1];
       if (str[i] == '\0')
@@ -146,7 +146,7 @@ char *the_curse()
          for (int i = 0; i < max_x - base_x; i++)
             addch(' ');
          mvaddstr(base_y, base_x, str);
-         move(y, x - 1);
+         move(y, x);
          refresh();
          break;
       default:
