@@ -99,9 +99,9 @@ char *the_curse()
    getyx(winshell, base_y, base_x);
    max_x = getmaxx(winshell);
    //! `str` should be a struct or part of a struct
-   //TODO: refactor `str` etc.
-   char *str = malloc(max_x * sizeof(char));
-   for (int i = 0; i < max_x; i++)
+   // TODO: refactor `str` etc.
+   char *str = malloc((max_x + 1) * sizeof(char));
+   for (int i = 0; i < max_x+1; i++)
       str[i] = '\0';
    for (;;)
    {
