@@ -131,6 +131,12 @@ char *the_curse()
       case KEY_UP:
          scrl(-1);
          break;
+      case KEY_SR: // shift+up
+         addstr(" Shift + UP ");
+         break;
+      case KEY_SF: // shift+down
+         addstr(" Shift + DOWN ");
+         break;
       case KEY_BACKSPACE: // TODO: write better code
          str_remove(str, x, base_x);
          move(base_y, base_x);

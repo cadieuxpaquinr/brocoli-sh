@@ -117,6 +117,8 @@ int BRO_cd(char **args)
          perror("BRO");
       }
    }
+   // TODO: fix ~ bug, only works once
+   //! After second use of ~ it wont change to expected value
    else if ((p = strstr(args[1], "~")))
    {
       // int pos = p - args[1];
@@ -196,8 +198,8 @@ int main(int argc, char **argv)
 {
 
    for (;;)
-   BRO_loop();
-      uncurse();
+      BRO_loop();
+   uncurse();
    fprintf(stdout, "\nBRO > Bye!\n");
    return 0;
 }
