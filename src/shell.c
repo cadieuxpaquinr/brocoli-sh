@@ -88,7 +88,7 @@ int BRO_execute(char **args)
    char *buf = calloc(4096, sizeof(char));
    read(fd[READ_END], buf, 4096);
    int x, y;
-   getyx(winshell, y, x);
+   getyx(stdscr, y, x);
    mvaddstr(y, x, buf);
    free(buf);
    close(fd[READ_END]);

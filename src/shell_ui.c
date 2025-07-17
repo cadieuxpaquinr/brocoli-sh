@@ -5,8 +5,6 @@
 // TODO: add structs containing repetitive data
 //* like base_x, base_y, maybe struct str, etc.
 
-WINDOW *winshell;
-
 enum TYPE
 {
    integer,
@@ -21,7 +19,7 @@ helper_debug((void *)whatever, integer);
 int helper_debug(void *data, enum TYPE type)
 {
    int y, x;
-   getyx(winshell, y, x);
+   getyx(stdscr, y, x);
    if (type == string)
    {
       char *debug_str = (char *)data;
@@ -46,7 +44,7 @@ int helper_debug(void *data, enum TYPE type)
 
 int str_insert(char *str, int x, int base_x, int ch)
 {
-   int max_x = getmaxx(winshell);
+   int max_x = getmaxx(stdscr);
    for (int i = max_x; i > (x - base_x); i--)
    {
       if (i != 0)
@@ -60,7 +58,7 @@ int str_insert(char *str, int x, int base_x, int ch)
 
 int str_remove(char *str, int x, int base_x)
 {
-   int max_x = getmaxx(winshell);
+   int max_x = getmaxx(stdscr);
    for (int i = (x - base_x - 1); i < max_x; i++)
    {
       str[i] = str[i + 1];
@@ -72,7 +70,7 @@ int str_remove(char *str, int x, int base_x)
 
 int str_delete(char *str, int x, int base_x)
 {
-   int max_x = getmaxx(winshell);
+   int max_x = getmaxx(stdscr);
    for (int i = (x - base_x + 1); i < max_x; i++)
    {
       str[i] = str[i + 1];
@@ -85,20 +83,20 @@ int str_delete(char *str, int x, int base_x)
 char *the_curse()
 {
    int ch, x, y, base_y, base_x, max_x;
-   if (!winshell)
+   if (!stdscr)
    {
-      winshell = initscr(); /* Start curses mode 		*/
-      scrollok(winshell, TRUE);
+      initscr(); /* Start curses mode 		*/
+      scrollok(stdscr, TRUE);
       raw();                /* Line buffering disabled	*/
       cbreak();
       keypad(stdscr, TRUE); /* We get F1, F2 etc..		*/
       noecho();             /* Don't echo() while we do getch */
    }
 
-   getyx(winshell, y, x);
+   getyx(stdscr, y, x);
    mvprintw(y, 0, "Bro > ");
-   getyx(winshell, base_y, base_x);
-   max_x = getmaxx(winshell);
+   getyx(stdscr, base_y, base_x);
+   max_x = getmaxx(stdscr);
    //! `str` should be a struct or part of a struct
    // TODO: refactor `str` etc.
    char *str = malloc((max_x + 1) * sizeof(char));
@@ -106,7 +104,7 @@ char *the_curse()
       str[i] = '\0';
    for (;;)
    {
-      getyx(winshell, y, x);
+      getyx(stdscr, y, x);
       ch = getch(); /* If raw() hadn't been called
                      * we have to press enter before it
                      * gets to the program 		*/
