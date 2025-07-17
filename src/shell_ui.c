@@ -2,6 +2,9 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
+//TODO: add structs containing repetitive data
+//* like base_x, base_y, maybe struct str, etc.
+
 WINDOW *winshell;
 
 enum TYPE
@@ -43,7 +46,6 @@ int helper_debug(void *data, enum TYPE type)
 
 int str_insert(char *str, int x, int base_x, int ch)
 {
-   char *debug_str;
    int max_x = getmaxx(winshell);
    for (int i = max_x; i > (x - base_x); i--)
    {
@@ -53,6 +55,30 @@ int str_insert(char *str, int x, int base_x, int ch)
       str[i + 1] = str[i];
    }
    str[x - base_x] = ch;
+   return 0;
+}
+
+int str_remove(char *str, int x, int base_x)
+{
+   int max_x = getmaxx(winshell);
+   for (int i = (x - base_x - 1); i < max_x; i++)
+   {
+      str[i] = str[i+1];
+      if (str[i] == '\0')
+         break;
+   }
+   return 0;
+}
+
+int str_delete(char *str, int x, int base_x)
+{
+   int max_x = getmaxx(winshell);
+   for (int i = (x - base_x + 1); i < max_x; i++)
+   {
+      str[i] = str[i+1];
+      if (str[i] == '\0')
+         break;
+   }
    return 0;
 }
 
@@ -72,6 +98,8 @@ char *the_curse()
    mvprintw(y, 0, "Bro > ");
    getyx(winshell, base_y, base_x);
    max_x = getmaxx(winshell);
+   //! `str` should be a struct or part of a struct
+   //TODO: refactor `str` etc.
    char *str = malloc(max_x * sizeof(char));
    for (int i = 0; i < max_x; i++)
       str[i] = '\0';
@@ -81,27 +109,48 @@ char *the_curse()
       ch = getch(); /* If raw() hadn't been called
                      * we have to press enter before it
                      * gets to the program 		*/
-      if (KEY_ENTER == ch || '\n' == ch || '\r' == ch)
-      {
-         str_insert(str, x, base_x, '\n');
-         // mvprintw(y+1, 0, "\n");
-         mvaddch(y, x, '\n');
-         refresh();
-         return str;
-      }
-      else if (KEY_LEFT == ch)
-         move(y, x - 1);
-      else if (KEY_RIGHT == ch)
-         move(y, x + 1);
-      else if (KEY_DOWN == ch)
-         return 0;
-      else if (KEY_UP == ch)
-         return 0;
-      else
-      {
-         str_insert(str, x, base_x, ch);
-         mvaddstr(base_y, base_x, str);
-         move(y, x + 1);
+      switch (ch) {
+         case KEY_ENTER:
+         case '\n':
+         case '\r':
+            str_insert(str, x, base_x, '\n');
+            // mvprintw(y+1, 0, "\n");
+            mvaddch(y, x, '\n');
+            refresh();
+            return str;
+         case KEY_LEFT:
+            move(y, x - 1);
+            break;
+         case KEY_RIGHT:
+            move(y, x + 1);
+            break;
+         case KEY_DOWN:
+            return 0;
+         case KEY_UP:
+            return 0;
+         case KEY_BACKSPACE: //TODO: write better code
+            str_remove(str, x, base_x);
+            move(base_y, base_x);
+            for (int i=0; i< max_x-base_x; i++)
+               addch(' ');
+            mvaddstr(base_y, base_x, str);
+            move(y, x - 1);
+            refresh();
+            break;
+         case KEY_DC: //TODO: write better code
+            str_delete(str, x, base_x);
+            move(base_y, base_x);
+            for (int i=0; i< max_x-base_x; i++)
+               addch(' ');
+            mvaddstr(base_y, base_x, str);
+            move(y, x - 1);
+            refresh();
+            break;
+         default:
+            str_insert(str, x, base_x, ch);
+            mvaddstr(base_y, base_x, str);
+            move(y, x + 1);
+            break;
       }
    }
    refresh(); /* Print it on to the real screen */
