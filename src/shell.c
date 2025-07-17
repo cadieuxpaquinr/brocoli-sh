@@ -1,3 +1,4 @@
+#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -86,7 +87,9 @@ int BRO_execute(char **args)
    }
    char *buf;
    read(fd[READ_END], buf, 4096);
-   fprintf(stderr, "%s\n", buf);
+   int x,y;
+   getyx(winshell, y, x);
+   mvaddstr(y, x, buf);
    return 1;
 }
 
