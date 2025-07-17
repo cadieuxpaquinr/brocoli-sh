@@ -85,7 +85,7 @@ int BRO_execute(char **args)
          wpid = waitpid(pid, &status, WUNTRACED);
       } while (!WIFEXITED(status) && !WIFSIGNALED(status));
    }
-   char *buf = malloc(4096 * sizeof(char));
+   char *buf = calloc(4096, sizeof(char));
    read(fd[READ_END], buf, 4096);
    int x, y;
    getyx(winshell, y, x);
@@ -187,6 +187,8 @@ int BRO_loop()
    args = BRO_split_line(line);
    BRO_prexec(args);
    // status = BRO_execute(args);
+   free(line);
+   free(args);
    return 0;
 }
 
@@ -194,8 +196,8 @@ int main(int argc, char **argv)
 {
 
    for (;;)
-      BRO_loop();
-   uncurse();
+   BRO_loop();
+      uncurse();
    fprintf(stdout, "\nBRO > Bye!\n");
    return 0;
 }
