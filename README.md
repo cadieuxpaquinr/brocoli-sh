@@ -7,7 +7,7 @@ It is a shell meant to be better for your health than other shells.
 # Dependencies
 
 - **BASH**     : sadly the shell still depends on Bash
-- **ncurses**  : for all the cursed stuff
+- **ncurses 6.4**  : for all the cursed stuff
 
 # Build & run
 ```
