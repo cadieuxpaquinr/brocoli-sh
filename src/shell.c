@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,7 +6,6 @@
 #include <sys/ioctl.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 #include "shell_ui.h"
 
@@ -85,11 +85,14 @@ int BRO_execute(char **args)
          wpid = waitpid(pid, &status, WUNTRACED);
       } while (!WIFEXITED(status) && !WIFSIGNALED(status));
    }
-   char *buf;
+   char *buf = malloc(4096 * sizeof(char));
    read(fd[READ_END], buf, 4096);
-   int x,y;
+   int x, y;
    getyx(winshell, y, x);
    mvaddstr(y, x, buf);
+   free(buf);
+   close(fd[READ_END]);
+   close(fd[WRITE_END]);
    return 1;
 }
 
