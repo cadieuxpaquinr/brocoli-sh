@@ -127,9 +127,11 @@ char *the_curse()
       //! Do not know yet how to differentiate mouse from up/down arrows
       case KEY_DOWN:
          scroll(stdscr);
+         move(--y, x);
          break;
       case KEY_UP:
          scrl(-1);
+         move(++y, x);
          break;
       case KEY_SR: // shift+up
          addstr(" Shift + UP ");
